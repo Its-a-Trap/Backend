@@ -1,0 +1,52 @@
+{ 
+    "/postlocationdata": {
+        "success":1
+    },
+
+    "/changearea": {
+        "mines": [
+            {
+                "timestamp":18297361298376,
+                "userId": 27,
+                "location": {
+                    "lat":-42.930943,
+                    "lon": 23.8293874983
+                }
+            },
+            {
+                "timestamp":18297361298376,
+                "userId": 27,
+                "location": {
+                    "lat":-42.930943,
+                    "lon": 23.8293874983
+                }
+            },
+            {
+                "timestamp":18297361298376,
+                "userId": 27,
+                "location": {
+                    "lat":-42.930943,
+                    "lon": 23.8293874983
+                }
+            },
+        ],
+        "highscores": [
+            {
+                "userId":27,
+                "score":500,
+            },
+            {
+                "userId":27,
+                "score":500,
+            },
+            {
+                "userId":27,
+                "score":500,
+            }
+        ],
+    },
+
+    "/explodemine": {
+        "success":1
+    }
+}
