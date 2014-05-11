@@ -1,24 +1,18 @@
-/* It's a Trap
- * May 2014
- *
- * This file contains the app setup.
- */
-
-
 // Import stuff
-var express = require('express'),
-    routes  = require('./routes'),
-    mongojs = require('mongojs')
+var express    = require('express')
+var bodyParser = require('body-parser')
+var mongojs    = require('mongojs')
+var routes     = require('./routes')
 
 // Set up the App and connect to DB
 app = express()
-app.use(express.json())
-// app.use(express.bodyParser()); // COULD BE DEPRECATED?!?!?!? http://andrewkelley.me/post/do-not-use-bodyparser-with-express-js.html
+app.use(bodyParser())
 
 // Set up the routes
-app.post('/postlocationdata', routes.postLocationData)
-app.post('/changearea', routes.getMines)
-app.post('/explodemine', routes.explodeMine)
+app.post('/api/postlocationdata', routes.postLocationData)
+app.post('/api/changearea', routes.changeArea)
+app.post('/api/plantmine', routes.plantMine)
+app.post('/api/explodemine', routes.explodeMine)
 
 // Run App
 app.listen(3000)
