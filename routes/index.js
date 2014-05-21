@@ -8,13 +8,16 @@ exports.postLocationData = function(req, res) {
 
 // /changeArea (location) - return mines and high scores within 10mi and subscribe to push notifications of new mines and high scores within 10mi
 exports.changeArea = function(req, res) {
-    var lat = req.body.location.lat
-    var lon = req.body.location.lon
+    var lat  = req.body.location.lat
+    var lon  = req.body.location.lon
+    var user = req.body.user
 
     // TODO: Subscribe to push notifications somehow
 
     db.collection('mines')
-        .find()
+        .find({
+            owner: {$ne:user}
+        })
         .map(function (mine) {
             return {
                 location: {
