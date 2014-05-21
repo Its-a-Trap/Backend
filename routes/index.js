@@ -20,6 +20,7 @@ exports.changeArea = function(req, res) {
         })
         .map(function (mine) {
             return {
+                id: mine._id,
                 location: {
                     lon: mine.location.coordinates[0],
                     lat: mine.location.coordinates[1],
@@ -27,12 +28,43 @@ exports.changeArea = function(req, res) {
                 owner: mine.owner,
             }
         }, function (err, mines) {
+            if (err) {
+                console.log(err)
+                return res.send(500)
+            }
             db.collection('scores')
                 .find(function (err, scores) {
+                if (err) {
+                    console.log(err)
+                    return res.send(500)
+                }
                 res.send({
                     'mines': mines,
                     'scores': scores,
                 })
+            })
+        })
+}
+
+// /mymines (user) - return a list of the given user's mines
+exports.myMines = function(req, res) {
+    var user = req.body.user
+
+    db.collection('mines')
+        .find({
+            owner: user
+        })
+        .map(function (err, mine) {
+            if (err) {
+                console.log(err)
+                return res.send(500)
+            }
+            res.send({
+                location: {
+                    lon: mine.location.coordinates[0],
+                    lat: mine.location.coordinates[1],
+                },
+                owner: mine.owner,
             })
         })
 }
@@ -50,7 +82,11 @@ exports.plantMine = function(req, res) {
         location: {type:'Point', coordinates:[lon,lat]},
         owner: owner
     }, function (err) {
-        res.send(!err)
+        if (err) {
+            console.log(err)
+            return res.send(500)
+        }
+        res.send()
     })
 }
 
