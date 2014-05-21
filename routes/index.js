@@ -47,7 +47,7 @@ exports.plantMine = function(req, res) {
         location: {type:'Point', coordinates:[lon,lat]},
         owner: owner
     }, function (err) {
-        if (!err) res.send(true)
+        res.send(!err)
     })
 }
 
