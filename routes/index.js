@@ -2,13 +2,13 @@ var mongojs = require('mongojs')
 var db      = mongojs('trap')
 
 
-var serverError = function(err, res) {
+var serverError = function(res, err) {
     console.log(err)
     res.send(500)
 }
 
-var requestError = function(req, res) {
-    console.log(req.body)
+var requestError = function(res, err) {
+    console.log(err)
     res.send(400)
 }
 
@@ -25,11 +25,11 @@ exports.changeArea = function(req, res) {
     console.log(req.body)
 
     var location = req.body.location
-    if (!location) return requestError(req, res)
+    if (!location) return requestError(res, "missing location")
     var lat      = location.lat
     var lon      = location.lon
     var user     = req.body.user
-    if (!lat || !lon || !user) return requestError(req, res)
+    if (!lat || !lon || !user) return requestError(res, "missing location.lat, location.lon or user")
 
     // TODO: Subscribe to push notifications somehow
 
@@ -47,7 +47,7 @@ exports.changeArea = function(req, res) {
                 owner: mongojs.ObjectId(mine.owner),
             }
         }, function (err, mines) {
-            if (err) return serverError(err)
+            if (err) return serverError(res, err)
             db.collection('players')
                 .find(function (err, scores) {
                 if (err) {
@@ -74,7 +74,7 @@ exports.myMines = function(req, res) {
             owner: mongojs.ObjectId(user)
         })
         .map(function (err, mine) {
-            if (err) return serverError(err)
+            if (err) return serverError(res, err)
             res.send({
                 location: {
                     lon: mine.location.coordinates[0],
@@ -102,7 +102,7 @@ exports.plantMine = function(req, res) {
             location: {type:'Point', coordinates:[lon,lat]},
             owner: owner
         }, function (err) {
-            if (err) return serverError(err)
+            if (err) return serverError(res, err)
             res.send()
         })
 }
