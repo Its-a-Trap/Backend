@@ -112,4 +112,8 @@ exports.explodeMine = function(req, res) {
     var payload = req.body
 
     // TODO: Implement this
+
+    // Reconcile database stuff
+
+    // Figure out who to notify (person who owns the mine, everyone in the area) // reminder - only the latest will be sent to iOS devices
 }
