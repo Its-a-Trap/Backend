@@ -104,7 +104,10 @@ exports.plantMine = function(req, res) {
         }, function (err) {
             if (err) return serverError(res, err)
             res.send()
-        })
+        }
+    )
+
+    // update users affected by new mine (everyone in the area)
 }
 
 // /explodemine (mine, user_id) - explode mine if it exists and return
