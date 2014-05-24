@@ -12,6 +12,18 @@ var requestError = function(res, err) {
     res.send(400)
 }
 
+// Convert a mine returned by the database to a cleaned up object for sending
+var niceMine = function(mine) {
+    return {
+        id: mine._id,
+        location: {
+            lon: mine.location.coordinates[0],
+            lat: mine.location.coordinates[1],
+        },
+        owner: mongojs.ObjectId(mine.owner),
+    }
+}
+
 // /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
     var locationList = req.body
@@ -34,55 +46,29 @@ exports.changeArea = function(req, res) {
     // TODO: Subscribe to push notifications somehow
 
     db.collection('mines')
-        .find({
-            owner: {$ne:mongojs.ObjectId(user)}
-        })
-        .map(function (mine) {
-            return {
-                id: mine._id,
-                location: {
-                    lon: mine.location.coordinates[0],
-                    lat: mine.location.coordinates[1],
-                },
-                owner: mongojs.ObjectId(mine.owner),
-            }
-        }, function (err, mines) {
+        .find({owner: mongojs.ObjectId(user)})
+        .map(niceMine, function (err, myMines) {
             if (err) return serverError(res, err)
-            db.collection('players')
-                .find(function (err, scores) {
-                if (err) {
-                    console.log(err)
-                    return res.send(500)
-                }
-                res.send({
-                    'mines': mines,
-                    'scores': scores,
-                })
-            })
-        })
-}
 
-// /mymines (user) - return a list of the given user's mines
-exports.myMines = function(req, res) {
-    console.log("\nmyMines")
-    console.log(req.body)
+            db.collection('mines')
+                .find({owner: {$ne:mongojs.ObjectId(user)}})
+                .map(niceMine, function (err, mines) {
+                    if (err) return serverError(res, err)
 
-    var user = req.body.user
+                    db.collection('players')
+                        .find(function (err, scores) {
+                            if (err) return serverError(res, err)
 
-    db.collection('mines')
-        .find({
-            owner: mongojs.ObjectId(user)
-        })
-        .map(function (err, mine) {
-            if (err) return serverError(res, err)
-            res.send({
-                location: {
-                    lon: mine.location.coordinates[0],
-                    lat: mine.location.coordinates[1],
-                },
-                owner: mongojs.ObjectId(mine.owner),
-            })
-        })
+                            res.send({
+                                'myMines': myMines,
+                                'mines': mines,
+                                'scores': scores,
+                            })
+                        })
+                    }
+                )
+        }
+    )
 }
 
 // /plantmine (mine, user_id) - explode mine if it exists and return
