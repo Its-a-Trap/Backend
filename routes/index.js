@@ -25,6 +25,16 @@ var prettyMine = function(mine) {
   }
 }
 
+// Convert a player returned by the database to a cleaned up object for sending
+var prettyPlayer = function(player) {
+  return {
+    id: player._id,
+    name: player.name,
+    email: player.name,
+    score: player.score,
+  }
+}
+
 var tellClientsToGetNewData = function(){
   return // TODO: Make this actually work
   request({
@@ -133,18 +143,53 @@ exports.placeMine = function(req, res) {
   // TODO: Check that the user has mines available to place
 
   db.collection('mines')
-    .insert({
-      active: true,
-      location: {type:'Point', coordinates:[lon,lat]},
-      owner: mongojs.ObjectId(user),
-    }, function (err, inserted) {
-      if (err) return serverError(res, err)
-      res.send(inserted[0])
-    }
-  )
+    .insert(
+      {
+        active: true,
+        location: {type:'Point', coordinates:[lon,lat]},
+        owner: mongojs.ObjectId(user),
+      },
+      function (err, inserted) {
+        if (err) return serverError(res, err)
+        res.send(inserted)
+      }
+    )
 
   // update users affected by new mine (everyone in the area)
   tellClientsToGetNewData()
+}
+
+// /getuserid (email) - explode mine if it exists and return
+exports.getUserId = function(req, res) {
+  console.log("\ngetUserId")
+  console.log(req.body)
+
+  var email = req.body.email
+  if (!email) return serverError(res, "missing email")
+
+  db.collection('players')
+    .find(
+      {email: email},
+      function(err, players) {
+        if (err) return serverError(res, err)
+
+        if (players.length > 0) return res.send(players[0]._id)
+
+        db.collection('players')
+          .insert(
+            {
+              email: email,
+              name: email,
+              score: 0,
+            },
+            function(err, inserted) {
+              if (err) return serverError(res, err)
+
+              res.send(inserted._id)
+            }
+          )
+      }
+    )
 }
 
 // /removemine (mine) - remove a mine without exploding anyone
@@ -182,7 +227,7 @@ exports.explodeMine = function(req, res) {
       [['_id','asc']],
       {$set: {active:false}},
       {},
-      function (err, object){
+      function (err, object) {
         if (err) console.warn(err.message)
         if (object) res.send({success:1})
         else res.send({success:0})

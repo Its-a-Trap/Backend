@@ -10,6 +10,7 @@ app.use(bodyParser())
 
 // Set up the routes
 app.get('/', function (req, res){ res.send({serverUp:1}) })
+app.post('/api/getuserid', routes.getUserId)
 app.post('/api/postlocationdata', routes.postLocationData)
 app.post('/api/changearea', routes.changeArea)
 app.post('/api/placemine', routes.placeMine)
