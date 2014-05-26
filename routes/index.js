@@ -216,6 +216,9 @@ exports.removeMine = function(req, res) {
 
 // /explodemine (mine, user_id) - explode mine if it exists and return
 exports.explodeMine = function(req, res) {
+  console.log("\nexplodeMine")
+  console.log(req.body)
+
   var id   = req.body.id // maybe?
   var user = req.body.user // maybe?
   if (!id || !user) return requestError(res, "missing id or user")
@@ -223,16 +226,17 @@ exports.explodeMine = function(req, res) {
   // Reconcile database stuff
   db.collection('mines')
     .findAndModify(
-      {_id: id},
-      [['_id','asc']],
-      {$set: {active:false}},
-      {},
-      function (err, object) {
-        if (err) console.warn(err.message)
-        if (object) res.send({success:1})
-        else res.send({success:0})
+      {
+        query: {_id: mongojs.ObjectId(id)},
+        update: {$set: {active:false}},
+        new: false,
+      },
+      function(err, object) {
+        if (err) return serverError(res, err)
+
+        if (object) res.send(!!object)
       }
-  )
+    )
 
   // Figure out who to notify (person who owns the mine, everyone in the area) // reminder - only the latest will be sent to iOS devices
   tellClientsToGetNewData()
