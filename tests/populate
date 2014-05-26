@@ -10,6 +10,11 @@ players.drop()
 
 mines.insert([
     {
+        _id: mongojs.ObjectId("537e48763511c15161a1ed9f"),
+        location: {type:'Point', coordinates:[1,1]},
+        owner: mongojs.ObjectId("537e48763511c15161a1ed9b"),
+    },
+    {
         _id: mongojs.ObjectId("537e48763511c15161a1ed9d"),
         location: {type:'Point', coordinates:[1,1]},
         owner: mongojs.ObjectId("537d2b84221e2a193a385e40"),
@@ -18,7 +23,7 @@ mines.insert([
         _id: mongojs.ObjectId("537e48763511c15161a1ed9e"),
         location: {type:'Point', coordinates:[2,2]},
         owner: mongojs.ObjectId("537e48763511c15161a1ed9c"),
-    }
+    },
 ])
 
 players.insert([

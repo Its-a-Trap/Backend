@@ -124,18 +124,19 @@ exports.placeMine = function(req, res) {
   console.log("\nplaceMine")
   console.log(req.body)
 
-  var lon   = req.body.location.lon
   var lat   = req.body.location.lat
-  var owner = req.body.owner
+  var lon   = req.body.location.lon
+  var user  = req.body.user
+  if (!lat || !lon || !user) return serverError(res, "missing lat, lon or user")
 
-  // TODO: Require client token rather than owner
+  // TODO: Require client token rather than user
   // TODO: Check that the user has mines available to place
 
   db.collection('mines')
     .insert({
       active: true,
       location: {type:'Point', coordinates:[lon,lat]},
-      owner: owner,
+      owner: mongojs.ObjectId(user),
     }, function (err, inserted) {
       if (err) return serverError(res, err)
       res.send(inserted[0])
