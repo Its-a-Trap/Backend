@@ -45,6 +45,19 @@ var tellClientsToGetNewData = function(){
   })
 }
 
+var subscribeToPush = function(user,type){
+  request({
+    "url":"http://localhost:8000/subscribe"
+    "method":"POST",
+    "body":
+      {
+        "user":user,
+        "type":type,
+        "token":"CAFEBABE"
+      }
+  })
+}
+
 // /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
   var locationList = req.body.locations
@@ -72,9 +85,11 @@ exports.changeArea = function(req, res) {
   var lat      = location.lat
   var lon      = location.lon
   var user     = req.body.user
+  var client_type = req.body.client_type
   if (!lat || !lon || !user) return requestError(res, "missing location.lat, location.lon or user")
 
   // TODO: Subscribe to push notifications somehow
+  subscribeToPush(user,client_type)
 
   db.collection('mines')
     .find({owner: mongojs.ObjectId(user)})
