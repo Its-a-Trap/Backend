@@ -13,7 +13,7 @@ var requestError = function(res, err) {
 }
 
 // Convert a mine returned by the database to a cleaned up object for sending
-var niceMine = function(mine) {
+var convertMinBetterFormat = function(mine) {
     return {
         id: mine._id,
         location: {
@@ -26,9 +26,19 @@ var niceMine = function(mine) {
 
 // /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
-    var locationList = req.body
+    var locationList = req.body.locations
+    var user = req.body.user
 
     // TODO: Implement this
+    for (var i = locationList.length - 1; i >= 0; i--) {
+        locationList[i].user = user
+        db.collection('location_history')
+            .insert(
+                locationList[i]
+        )
+    }
+
+    res.send({success:1})
 }
 
 // /changeArea (location) - return mines and high scores within 10mi and subscribe to push notifications of new mines and high scores within 10mi
@@ -47,12 +57,12 @@ exports.changeArea = function(req, res) {
 
     db.collection('mines')
         .find({owner: mongojs.ObjectId(user)})
-        .map(niceMine, function (err, myMines) {
+        .map(convertMineToBetterFormat, function (err, myMines) {
             if (err) return serverError(res, err)
 
             db.collection('mines')
                 .find({owner: {$ne:mongojs.ObjectId(user)}})
-                .map(niceMine, function (err, mines) {
+                .map(convertMineToBetterFormat, function (err, mines) {
                     if (err) return serverError(res, err)
 
                     db.collection('players')
@@ -87,9 +97,10 @@ exports.plantMine = function(req, res) {
         .insert({
             location: {type:'Point', coordinates:[lon,lat]},
             owner: owner
-        }, function (err) {
+        }, function (err, objects) {
             if (err) return serverError(res, err)
-            res.send()
+            console.log(objects)
+            res.send(objects[0])
         }
     )
 
@@ -98,11 +109,22 @@ exports.plantMine = function(req, res) {
 
 // /explodemine (mine, user_id) - explode mine if it exists and return
 exports.explodeMine = function(req, res) {
-    var payload = req.body
-
-    // TODO: Implement this
+    var id    = req.body.id // maybe?
 
     // Reconcile database stuff
+    db.collection('mines')
+        .findAndModify(
+            {_id: id},
+            [['_id','asc']],
+            {$set: {active:false}},
+            {},
+            function (err, object){
+                if (err) console.warn(err.message)
+                if (object) res.send({success:1})
+                else res.send({success:0})
+            }
+    )
 
     // Figure out who to notify (person who owns the mine, everyone in the area) // reminder - only the latest will be sent to iOS devices
+
 }
