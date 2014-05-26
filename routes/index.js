@@ -25,6 +25,26 @@ var convertMinBetterFormat = function(mine) {
   }
 }
 
+var tellClientsToGetNewData = function(){
+  request({
+    "url":"http://localhost:8000/send",
+    "method":"POST",
+    "body": 
+      { "android": {
+        // "collapseKey": "optional",
+        "data": {
+          "message": "Your message here"
+        }
+      },
+        "ios": {
+          "badge": 0,
+          "alert": "Your message here",
+          // "sound": "soundName"
+        }
+      }
+  })
+}
+
 // /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
   var locationList = req.body.locations
@@ -106,6 +126,7 @@ exports.plantMine = function(req, res) {
   )
 
   // update users affected by new mine (everyone in the area)
+  tellClientsToGetNewData()
 }
 
 // /explodemine (mine, user_id) - explode mine if it exists and return
@@ -127,21 +148,5 @@ exports.explodeMine = function(req, res) {
   )
 
   // Figure out who to notify (person who owns the mine, everyone in the area) // reminder - only the latest will be sent to iOS devices
-  request({
-    "url":"http://localhost:8000/send",
-    "method":"POST",
-    "body": 
-      { "android": {
-        // "collapseKey": "optional",
-        "data": {
-          "message": "Your message here"
-        }
-      },
-        "ios": {
-          "badge": 0,
-          "alert": "Your message here",
-          // "sound": "soundName"
-        }
-      }
-  })
+  tellClientsToGetNewData()
 }
