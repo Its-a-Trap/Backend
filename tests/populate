@@ -8,17 +8,30 @@ var players = db.collection('players')
 mines.drop()
 players.drop()
 
-mines.insert([{
-    location: {type:'Point', coordinates:[1,1]},
-    owner: mongojs.ObjectId("537d2b84221e2a193a385e40"),
-}, {
-    location: {type:'Point', coordinates:[2,2]},
-    owner: mongojs.ObjectId("537e48763511c15161a1ed9c"),
-}])
+mines.insert([
+    {
+        _id: mongojs.ObjectId("537e48763511c15161a1ed9d"),
+        location: {type:'Point', coordinates:[1,1]},
+        owner: mongojs.ObjectId("537d2b84221e2a193a385e40"),
+    },
+    {
+        _id: mongojs.ObjectId("537e48763511c15161a1ed9e"),
+        location: {type:'Point', coordinates:[2,2]},
+        owner: mongojs.ObjectId("537e48763511c15161a1ed9c"),
+    }
+])
 
 players.insert([
-    {_id:mongojs.ObjectId("537e48763511c15161a1ed9b"), name:"Daniel", score:1},
-    {_id:mongojs.ObjectId("537e48763511c15161a1ed9c"), name:"Calder", score:9001},
+    {
+        _id: mongojs.ObjectId("537e48763511c15161a1ed9b"),
+        name: "Daniel",
+        score: 1
+    },
+    {
+        _id: mongojs.ObjectId("537e48763511c15161a1ed9c"),
+        name: "Calder",
+        score: 9001
+    },
 ])
 
 db.close()

@@ -12,7 +12,8 @@ app.use(bodyParser())
 app.get('/', function (req, res){ res.send({serverUp:1}) })
 app.post('/api/postlocationdata', routes.postLocationData)
 app.post('/api/changearea', routes.changeArea)
-app.post('/api/plantmine', routes.plantMine)
+app.post('/api/placemine', routes.placeMine)
+app.post('/api/removemine', routes.removeMine)
 app.post('/api/explodemine', routes.explodeMine)
 
 // Run App

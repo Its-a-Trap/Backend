@@ -1,6 +1,6 @@
 var mongojs = require('mongojs')
-var db      = mongojs('trap'),
-  request = require('request')
+var db      = mongojs('trap')
+var request = require('request')
 
 
 var serverError = function(res, err) {
@@ -14,7 +14,7 @@ var requestError = function(res, err) {
 }
 
 // Convert a mine returned by the database to a cleaned up object for sending
-var convertMinBetterFormat = function(mine) {
+var prettyMine = function(mine) {
   return {
     id: mine._id,
     location: {
@@ -26,6 +26,7 @@ var convertMinBetterFormat = function(mine) {
 }
 
 var tellClientsToGetNewData = function(){
+  return // TODO: Make this actually work
   request({
     "url":"http://localhost:8000/send",
     "method":"POST",
@@ -46,8 +47,9 @@ var tellClientsToGetNewData = function(){
 }
 
 var subscribeToPush = function(user,type){
+  return // TODO: Make this actually work
   request({
-    "url":"http://localhost:8000/subscribe"
+    "url":"http://localhost:8000/subscribe",
     "method":"POST",
     "body":
       {
@@ -93,12 +95,12 @@ exports.changeArea = function(req, res) {
 
   db.collection('mines')
     .find({owner: mongojs.ObjectId(user)})
-    .map(convertMineToBetterFormat, function (err, myMines) {
+    .map(prettyMine, function (err, myMines) {
       if (err) return serverError(res, err)
 
       db.collection('mines')
         .find({owner: {$ne:mongojs.ObjectId(user)}})
-        .map(convertMineToBetterFormat, function (err, mines) {
+        .map(prettyMine, function (err, mines) {
           if (err) return serverError(res, err)
 
           db.collection('players')
@@ -117,9 +119,9 @@ exports.changeArea = function(req, res) {
   )
 }
 
-// /plantmine (mine, user_id) - explode mine if it exists and return
-exports.plantMine = function(req, res) {
-  console.log("\nplantMine")
+// /placemine (mine, user_id) - explode mine if it exists and return
+exports.placeMine = function(req, res) {
+  console.log("\nplaceMine")
   console.log(req.body)
 
   var lon   = req.body.location.lon
@@ -131,12 +133,12 @@ exports.plantMine = function(req, res) {
 
   db.collection('mines')
     .insert({
+      active: true,
       location: {type:'Point', coordinates:[lon,lat]},
-      owner: owner
-    }, function (err, objects) {
+      owner: owner,
+    }, function (err, inserted) {
       if (err) return serverError(res, err)
-      console.log(objects)
-      res.send(objects[0])
+      res.send(inserted[0])
     }
   )
 
@@ -144,9 +146,33 @@ exports.plantMine = function(req, res) {
   tellClientsToGetNewData()
 }
 
+// /removemine (mine) - remove a mine without exploding anyone
+exports.removeMine = function(req, res) {
+  console.log("\nremoveMine")
+  console.log(req.body)
+
+  var id = req.body.id
+  if (!id) return requestError(res, "missing id")
+
+  console.log(mongojs.ObjectId(id))
+  db.collection('mines')
+    .remove(
+      {_id: mongojs.ObjectId(id)},
+      function (err, result) {
+        if (err) return serverError(res, err)
+        res.send(result.n > 0)
+      }
+  )
+
+  // update users affected by the removed mine (everyone in the area)
+  tellClientsToGetNewData()
+}
+
 // /explodemine (mine, user_id) - explode mine if it exists and return
 exports.explodeMine = function(req, res) {
-  var id    = req.body.id // maybe?
+  var id   = req.body.id // maybe?
+  var user = req.body.user // maybe?
+  if (!id || !user) return requestError(res, "missing id or user")
 
   // Reconcile database stuff
   db.collection('mines')
