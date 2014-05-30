@@ -113,9 +113,10 @@ exports.changeArea = function(req, res) {
 
       db.collection('mines')
         .find({
-          owner: {$ne:mongojs.ObjectId(user)},
+          owner: {$ne: mongojs.ObjectId(user)},
           active: true,
         })
+        .sort({score: 1})
         .map(prettyMine, function (err, mines) {
           if (err) return serverError(res, err)
 
@@ -171,7 +172,8 @@ exports.getUserId = function(req, res) {
   console.log(req.body)
 
   var email = req.body.email
-  if (!email) return serverError(res, "missing email")
+  var name  = req.body.name
+  if (!email || !name) return serverError(res, "missing email or name")
 
   db.collection('players')
     .find(
@@ -185,7 +187,7 @@ exports.getUserId = function(req, res) {
           .insert(
             {
               email: email,
-              name: email,
+              name: name,
               score: 0,
             },
             function(err, inserted) {
