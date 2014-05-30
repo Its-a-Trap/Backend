@@ -104,12 +104,18 @@ exports.changeArea = function(req, res) {
   subscribeToPush(user,client_type)
 
   db.collection('mines')
-    .find({owner: mongojs.ObjectId(user)})
+    .find({
+      owner: mongojs.ObjectId(user),
+      active: true,
+    })
     .map(prettyMine, function (err, myMines) {
       if (err) return serverError(res, err)
 
       db.collection('mines')
-        .find({owner: {$ne:mongojs.ObjectId(user)}})
+        .find({
+          owner: {$ne:mongojs.ObjectId(user)},
+          active: true,
+        })
         .map(prettyMine, function (err, mines) {
           if (err) return serverError(res, err)
 
@@ -228,7 +234,7 @@ exports.explodeMine = function(req, res) {
     .findAndModify(
       {
         query: {_id: mongojs.ObjectId(id)},
-        update: {$set: {active:false}},
+        update: {$set: {active: false}},
         new: false,
       },
       function(err, object) {
