@@ -36,13 +36,13 @@ players.insert([
         _id: mongojs.ObjectId("537e48763511c15161a1ed9b"),
         name: "Daniel",
         email: "maegereg@gmail.com",
-        score: 1,
+        score: 500,
     },
     {
         _id: mongojs.ObjectId("537e48763511c15161a1ed9c"),
         name: "Calder",
         email: "caldercoalson@gmail.com",
-        score: 9001,
+        score: 500,
     },
 ])
 

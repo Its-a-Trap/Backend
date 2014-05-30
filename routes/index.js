@@ -101,12 +101,16 @@ exports.changeArea = function(req, res) {
   // TODO: Subscribe to push notifications somehow
   subscribeToPush(user,client_type)
 
+  var count = 0
+  var index = 0
+  var score = 0
+
   db.collection('mines')
     .find({
       owner: mongojs.ObjectId(user),
       active: true,
     })
-    .map(prettyMine, function (err, myMines) {
+    .map(prettyMine, function(err, myMines) {
       if (err) return serverError(res, err)
 
       db.collection('mines')
@@ -114,22 +118,38 @@ exports.changeArea = function(req, res) {
           owner: {$ne: mongojs.ObjectId(user)},
           active: true,
         })
-        .sort({score: 1})
-        .map(prettyMine, function (err, mines) {
+        .map(prettyMine, function(err, mines) {
           if (err) return serverError(res, err)
 
           db.collection('players')
-            .find(function (err, scores) {
-              if (err) return serverError(res, err)
+            .find()
+            .sort({score: 1})
+            .map(
+              function(player) {
+                console.log(player._id.toString())
+                console.log(user)
+                console.log(player._id.toString() == user)
+                console.log("")
+                if (player._id.toString() == user) {
+                  score = player.score
+                  index = count
+                }
+                count++
+                return prettyPlayer(player)
+              },
+              function(err, scores) {
+                if (err) return serverError(res, err)
 
-              res.send({
-                'myMines': myMines,
-                'mines': mines,
-                'scores': scores,
-              })
-            })
-          }
-        )
+                res.send({
+                  'myMines': myMines,
+                  'mines': mines,
+                  'scores': scores,
+                  'myScoreIndex': index,
+                  'myScore': score,
+                })
+              }
+            )
+        })
     }
   )
 }
