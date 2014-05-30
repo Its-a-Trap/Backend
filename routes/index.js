@@ -10,7 +10,7 @@ var serverError = function(res, err) {
 
 var requestError = function(res, err) {
   console.log(err)
-  res.send(400)
+  res.send(400, {error: err})
 }
 
 // Convert a mine returned by the database to a cleaned up object for sending
@@ -141,7 +141,7 @@ exports.placeMine = function(req, res) {
   var lat   = req.body.location.lat
   var lon   = req.body.location.lon
   var user  = req.body.user
-  if (!lat || !lon || !user) return serverError(res, "missing lat, lon or user")
+  if (!lat || !lon || !user) return requestError(res, "missing lat, lon or user")
 
   // TODO: Require client token rather than user
   // TODO: Check that the user has mines available to place
@@ -155,6 +155,7 @@ exports.placeMine = function(req, res) {
       },
       function (err, inserted) {
         if (err) return serverError(res, err)
+
         res.send(prettyMine(inserted))
       }
     )
@@ -169,7 +170,7 @@ exports.getUserId = function(req, res) {
 
   var email = req.body.email
   var name  = req.body.name
-  if (!email || !name) return serverError(res, "missing email or name")
+  if (!email || !name) return requestError(res, "missing email or name")
 
   db.collection('players')
     .find(
@@ -209,6 +210,7 @@ exports.removeMine = function(req, res) {
       {_id: mongojs.ObjectId(id)},
       function (err, result) {
         if (err) return serverError(res, err)
+
         res.send(result.n > 0)
       }
     )
@@ -238,6 +240,7 @@ exports.explodeMine = function(req, res) {
       },
       function(err, mine) {
         if (err) return serverError(res, err)
+
         if (!mine) return res.send({success: false})
 
         // Increment owner's score
