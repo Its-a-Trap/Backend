@@ -14,19 +14,19 @@ mines.insert([
     {
         _id: mongojs.ObjectId("537e48763511c15161a1ed9f"),
         active: true,
-        location: {type:'Point', coordinates:[1,1]},
+        location: {type:'Point', coordinates:[-93.1512663, 44.460136]},
         owner: mongojs.ObjectId("537e48763511c15161a1ed9b"),
     },
     {
         _id: mongojs.ObjectId("537e48763511c15161a1ed9d"),
         active: true,
-        location: {type:'Point', coordinates:[1,1]},
+        location: {type:'Point', coordinates:[-93.1512731, 44.46015]},
         owner: mongojs.ObjectId("537d2b84221e2a193a385e40"),
     },
     {
         _id: mongojs.ObjectId("537e48763511c15161a1ed9e"),
         active: true,
-        location: {type:'Point', coordinates:[2,2]},
+        location: {type:'Point', coordinates:[-93.1512796, 44.4601341]},
         owner: mongojs.ObjectId("537e48763511c15161a1ed9c"),
     },
 ])
