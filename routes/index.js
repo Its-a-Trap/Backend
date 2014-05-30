@@ -157,7 +157,7 @@ exports.placeMine = function(req, res) {
       },
       function (err, inserted) {
         if (err) return serverError(res, err)
-        res.send(inserted)
+        res.send(prettyMine(inserted))
       }
     )
 
