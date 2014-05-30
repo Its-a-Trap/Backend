@@ -70,7 +70,6 @@ var subscribeToPush = function(user,type){
   })
 }
 
-// /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
   var locationList = req.body.locations
   var user = req.body.user
@@ -87,7 +86,6 @@ exports.postLocationData = function(req, res) {
   res.send({success:1})
 }
 
-// /changeArea (location) - return mines and high scores within 10mi and subscribe to push notifications of new mines and high scores within 10mi
 exports.changeArea = function(req, res) {
   console.log("\nchangeArea")
   console.log(req.body)
@@ -136,7 +134,6 @@ exports.changeArea = function(req, res) {
   )
 }
 
-// /placemine (mine, user_id) - explode mine if it exists and return
 exports.placeMine = function(req, res) {
   console.log("\nplaceMine")
   console.log(req.body)
@@ -166,7 +163,6 @@ exports.placeMine = function(req, res) {
   tellClientsToGetNewData()
 }
 
-// /getuserid (email) - explode mine if it exists and return
 exports.getUserId = function(req, res) {
   console.log("\ngetUserId")
   console.log(req.body)
@@ -200,7 +196,6 @@ exports.getUserId = function(req, res) {
     )
 }
 
-// /removemine (mine) - remove a mine without exploding anyone
 exports.removeMine = function(req, res) {
   console.log("\nremoveMine")
   console.log(req.body)
@@ -222,7 +217,6 @@ exports.removeMine = function(req, res) {
   tellClientsToGetNewData()
 }
 
-// /explodemine (mine, user_id) - explode mine if it exists and return
 exports.explodeMine = function(req, res) {
   console.log("\nexplodeMine")
   console.log(req.body)
@@ -244,20 +238,25 @@ exports.explodeMine = function(req, res) {
       },
       function(err, mine) {
         if (err) return serverError(res, err)
-
-        res.send(!!mine)
+        if (!mine) return res.send({success: false})
 
         // Increment owner's score
-        if (mine) {
-          db.collection('players')
-            .update(
-              {_id: mine.owner},
-              {$inc: {score: 100}},
-              function(err) {
-                if (err) return serverError(res, err)
-              }
-            )
-        }
+        db.collection('players')
+          .findAndModify(
+            {
+              query: {_id: mine.owner},
+              update: {$inc: {score: 100}},
+              new: false,
+            },
+            function(err, owner) {
+              if (err) return serverError(res, err)
+
+              res.send({
+                success: true,
+                ownerName: owner.name,
+              })
+            }
+          )
       }
     )
 
