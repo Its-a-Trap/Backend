@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 var mongojs = require('mongojs')
+var randstr = require('randomstring').generate
+var _       = require('underscore')
 var db      = mongojs('trap')
 var mines   = db.collection('mines')
 var players = db.collection('players')
@@ -43,5 +45,13 @@ players.insert([
         score: 9001,
     },
 ])
+
+players.insert(_.map(_.range(100), function () {
+    return {
+        name: randstr(),
+        email: randstr(),
+        score: Math.floor(Math.random() * 1000),
+    }
+}))
 
 db.close()
