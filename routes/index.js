@@ -214,7 +214,7 @@ exports.removeMine = function(req, res) {
         if (err) return serverError(res, err)
         res.send(result.n > 0)
       }
-  )
+    )
 
   // update users affected by the removed mine (everyone in the area)
   tellClientsToGetNewData()
@@ -233,14 +233,29 @@ exports.explodeMine = function(req, res) {
   db.collection('mines')
     .findAndModify(
       {
-        query: {_id: mongojs.ObjectId(id)},
+        query: {
+          _id: mongojs.ObjectId(id),
+          active: true,
+        },
         update: {$set: {active: false}},
         new: false,
       },
-      function(err, object) {
+      function(err, mine) {
         if (err) return serverError(res, err)
 
-        if (object) res.send(!!object)
+        res.send(!!mine)
+
+        // Increment owner's score
+        if (mine) {
+          db.collection('players')
+            .update(
+              {_id: mine.owner},
+              {$inc: {score: 100}},
+              function(err) {
+                if (err) return serverError(res, err)
+              }
+            )
+        }
       }
     )
 
