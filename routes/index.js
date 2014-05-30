@@ -126,10 +126,6 @@ exports.changeArea = function(req, res) {
             .sort({score: 1})
             .map(
               function(player) {
-                console.log(player._id.toString())
-                console.log(user)
-                console.log(player._id.toString() == user)
-                console.log("")
                 if (player._id.toString() == user) {
                   score = player.score
                   index = count
