@@ -16,6 +16,7 @@ app.post('/api/changearea', routes.changeArea)
 app.post('/api/placemine', routes.placeMine)
 app.post('/api/removemine', routes.removeMine)
 app.post('/api/explodemine', routes.explodeMine)
+app.post('/api/killuser', routes.killUser)
 
 // Run App
 app.listen(3000)

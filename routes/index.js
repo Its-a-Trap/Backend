@@ -14,6 +14,7 @@ var requestError = function(res, err) {
 }
 
 var printDate = function() {
+  console.log("\n")
   console.log(new Date().getTime())
 }
 
@@ -89,6 +90,58 @@ exports.postLocationData = function(req, res) {
   }
 
   res.send({success:1})
+}
+
+exports.killUser = function(req, res){
+  printDate()
+  console.log("\nkillUser")
+  console.log(req.body)
+
+  var user  = req.body.user
+
+
+
+
+  // Remove points from them
+  db.collection('players')
+    .findOne(
+      {
+        _id:user,
+        score:{$gt:100}
+      }, function(err, user){
+        
+        if(user) {
+          console.log("Found a user")
+          db.collection('players')
+            .findAndModify(
+              {
+                query: {_id: user._id},
+                update: {$inc: {score: -100}},
+                new: false,
+              },
+              function(err, owner) {
+                if (err) return serverError(res, err)
+                if (owner) console.log("Subtracted points")
+              }
+          )
+        }
+      }
+  )
+
+  // Remove that user's mines
+  db.collection('mines')
+    .findAndModify(
+      {
+        query: {
+                  owner: mongojs.ObjectId(user),
+                  active: true,
+               },
+        update: {$unset: {owner: 1}}
+      }, function(err, mines){
+        console.log("Removed mines")
+        res.send(true)
+      }
+  )
 }
 
 exports.changeArea = function(req, res) {
@@ -270,8 +323,9 @@ exports.explodeMine = function(req, res) {
 
         if (!mine) return res.send({success: false})
 
-        // Increment owner's score
-        db.collection('players')
+        // Increment owner's score if there is an owner
+        if(mine.owner){
+          db.collection('players')
           .findAndModify(
             {
               query: {_id: mine.owner},
@@ -287,6 +341,7 @@ exports.explodeMine = function(req, res) {
               })
             }
           )
+        }
       }
     )
 
