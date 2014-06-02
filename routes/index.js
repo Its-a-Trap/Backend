@@ -10,7 +10,7 @@ var serverError = function(res, err) {
 
 var requestError = function(res, err) {
   console.log(err)
-  res.send(400)
+  res.send(400, {error: err})
 }
 
 // Convert a mine returned by the database to a cleaned up object for sending
@@ -70,7 +70,6 @@ var subscribeToPush = function(user,type,token){
   })
 }
 
-// /postlocationdata (location_history, user_id) -  upload location history to server for creation of heatmaps
 exports.postLocationData = function(req, res) {
   var locationList = req.body.locations
   var user = req.body.user
@@ -87,7 +86,6 @@ exports.postLocationData = function(req, res) {
   res.send({success:1})
 }
 
-// /changeArea (location) - return mines and high scores within 10mi and subscribe to push notifications of new mines and high scores within 10mi
 exports.changeArea = function(req, res) {
   console.log("\nchangeArea")
   console.log(req.body)
@@ -104,33 +102,55 @@ exports.changeArea = function(req, res) {
   // TODO: Subscribe to push notifications somehow
   subscribeToPush(user,client_type,token)
 
+  var count = 0
+  var index = 0
+  var score = 0
+
   db.collection('mines')
-    .find({owner: mongojs.ObjectId(user)})
-    .map(prettyMine, function (err, myMines) {
+    .find({
+      owner: mongojs.ObjectId(user),
+      active: true,
+    })
+    .map(prettyMine, function(err, myMines) {
       if (err) return serverError(res, err)
 
       db.collection('mines')
-        .find({owner: {$ne:mongojs.ObjectId(user)}})
-        .map(prettyMine, function (err, mines) {
+        .find({
+          owner: {$ne: mongojs.ObjectId(user)},
+          active: true,
+        })
+        .map(prettyMine, function(err, mines) {
           if (err) return serverError(res, err)
 
           db.collection('players')
-            .find(function (err, scores) {
-              if (err) return serverError(res, err)
+            .find()
+            .sort({score: 1})
+            .map(
+              function(player) {
+                if (player._id.toString() == user) {
+                  score = player.score
+                  index = count
+                }
+                count++
+                return prettyPlayer(player)
+              },
+              function(err, scores) {
+                if (err) return serverError(res, err)
 
-              res.send({
-                'myMines': myMines,
-                'mines': mines,
-                'scores': scores,
-              })
-            })
-          }
-        )
+                res.send({
+                  'myMines': myMines,
+                  'mines': mines,
+                  'scores': scores,
+                  'myScoreIndex': index,
+                  'myScore': score,
+                })
+              }
+            )
+        })
     }
   )
 }
 
-// /placemine (mine, user_id) - explode mine if it exists and return
 exports.placeMine = function(req, res) {
   console.log("\nplaceMine")
   console.log(req.body)
@@ -138,7 +158,7 @@ exports.placeMine = function(req, res) {
   var lat   = req.body.location.lat
   var lon   = req.body.location.lon
   var user  = req.body.user
-  if (!lat || !lon || !user) return serverError(res, "missing lat, lon or user")
+  if (!lat || !lon || !user) return requestError(res, "missing lat, lon or user")
 
   // TODO: Require client token rather than user
   // TODO: Check that the user has mines available to place
@@ -152,7 +172,8 @@ exports.placeMine = function(req, res) {
       },
       function (err, inserted) {
         if (err) return serverError(res, err)
-        res.send(inserted)
+
+        res.send(prettyMine(inserted))
       }
     )
 
@@ -160,13 +181,13 @@ exports.placeMine = function(req, res) {
   tellClientsToGetNewData()
 }
 
-// /getuserid (email) - explode mine if it exists and return
 exports.getUserId = function(req, res) {
   console.log("\ngetUserId")
   console.log(req.body)
 
   var email = req.body.email
-  if (!email) return serverError(res, "missing email")
+  var name  = req.body.name
+  if (!email || !name) return requestError(res, "missing email or name")
 
   db.collection('players')
     .find(
@@ -180,7 +201,7 @@ exports.getUserId = function(req, res) {
           .insert(
             {
               email: email,
-              name: email,
+              name: name,
               score: 0,
             },
             function(err, inserted) {
@@ -193,7 +214,6 @@ exports.getUserId = function(req, res) {
     )
 }
 
-// /removemine (mine) - remove a mine without exploding anyone
 exports.removeMine = function(req, res) {
   console.log("\nremoveMine")
   console.log(req.body)
@@ -207,15 +227,15 @@ exports.removeMine = function(req, res) {
       {_id: mongojs.ObjectId(id)},
       function (err, result) {
         if (err) return serverError(res, err)
+
         res.send(result.n > 0)
       }
-  )
+    )
 
   // update users affected by the removed mine (everyone in the area)
   tellClientsToGetNewData()
 }
 
-// /explodemine (mine, user_id) - explode mine if it exists and return
 exports.explodeMine = function(req, res) {
   console.log("\nexplodeMine")
   console.log(req.body)
@@ -228,14 +248,35 @@ exports.explodeMine = function(req, res) {
   db.collection('mines')
     .findAndModify(
       {
-        query: {_id: mongojs.ObjectId(id)},
-        update: {$set: {active:false}},
+        query: {
+          _id: mongojs.ObjectId(id),
+          active: true,
+        },
+        update: {$set: {active: false}},
         new: false,
       },
-      function(err, object) {
+      function(err, mine) {
         if (err) return serverError(res, err)
 
-        if (object) res.send(!!object)
+        if (!mine) return res.send({success: false})
+
+        // Increment owner's score
+        db.collection('players')
+          .findAndModify(
+            {
+              query: {_id: mine.owner},
+              update: {$inc: {score: 100}},
+              new: false,
+            },
+            function(err, owner) {
+              if (err) return serverError(res, err)
+
+              res.send({
+                success: true,
+                ownerName: owner.name,
+              })
+            }
+          )
       }
     )
 
