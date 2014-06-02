@@ -13,6 +13,10 @@ var requestError = function(res, err) {
   res.send(400, {error: err})
 }
 
+var printDate = function() {
+  console.log(new Date().getTime())
+}
+
 // Convert a mine returned by the database to a cleaned up object for sending
 var prettyMine = function(mine) {
   return {
@@ -36,7 +40,7 @@ var prettyPlayer = function(player) {
 }
 
 var tellClientsToGetNewData = function(){
-  return // TODO: Make this actually work
+  // return // TODO: Make this actually work
   request({
     "url":"http://localhost:8000/send",
     "method":"POST",
@@ -44,7 +48,7 @@ var tellClientsToGetNewData = function(){
       { "android": {
         // "collapseKey": "optional",
         "data": {
-          "message": "Your message here"
+          "message": "YO! GET NEW DATA!"
         }
       },
         "ios": {
@@ -57,7 +61,7 @@ var tellClientsToGetNewData = function(){
 }
 
 var subscribeToPush = function(user,type,token){
-  return // TODO: Make this actually work
+  // return // TODO: Make this actually work
   request({
     "url":"http://localhost:8000/subscribe",
     "method":"POST",
@@ -87,6 +91,7 @@ exports.postLocationData = function(req, res) {
 }
 
 exports.changeArea = function(req, res) {
+  printDate()
   console.log("\nchangeArea")
   console.log(req.body)
 
@@ -152,6 +157,7 @@ exports.changeArea = function(req, res) {
 }
 
 exports.placeMine = function(req, res) {
+  printDate()
   console.log("\nplaceMine")
   console.log(req.body)
 
@@ -182,6 +188,7 @@ exports.placeMine = function(req, res) {
 }
 
 exports.getUserId = function(req, res) {
+  printDate()
   console.log("\ngetUserId")
   console.log(req.body)
 
@@ -215,6 +222,7 @@ exports.getUserId = function(req, res) {
 }
 
 exports.removeMine = function(req, res) {
+  printDate()
   console.log("\nremoveMine")
   console.log(req.body)
 
@@ -237,6 +245,7 @@ exports.removeMine = function(req, res) {
 }
 
 exports.explodeMine = function(req, res) {
+  printDate()
   console.log("\nexplodeMine")
   console.log(req.body)
 
