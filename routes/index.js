@@ -105,7 +105,7 @@ exports.changeArea = function(req, res) {
   if (!lat || !lon || !user) return requestError(res, "missing location.lat, location.lon or user")
 
   // TODO: Subscribe to push notifications somehow
-  subscribeToPush(user,client_type,token)
+  if (client_type == "Android") subscribeToPush(user,client_type,token)
 
   var count = 0
   var index = 0
