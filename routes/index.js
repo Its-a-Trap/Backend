@@ -45,7 +45,7 @@ var tellClientsToGetNewData = function(){
     "url":"http://localhost:8000/send",
     "method":"POST",
     "body": 
-      { "android": {
+      JSON.stringify({ "android": {
         // "collapseKey": "optional",
         "data": {
           "message": "YO! GET NEW DATA!"
@@ -56,7 +56,7 @@ var tellClientsToGetNewData = function(){
           "alert": "Your message here",
           // "sound": "soundName"
         }
-      }
+      })
   })
 }
 
@@ -66,11 +66,11 @@ var subscribeToPush = function(user,type,token){
     "url":"http://localhost:8000/subscribe",
     "method":"POST",
     "body":
-      {
+      JSON.stringify({
         "user":user,
         "type":type,
         "token":token
-      }
+      })
   })
 }
 
