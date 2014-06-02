@@ -56,7 +56,7 @@ var tellClientsToGetNewData = function(){
   })
 }
 
-var subscribeToPush = function(user,type){
+var subscribeToPush = function(user,type,token){
   return // TODO: Make this actually work
   request({
     "url":"http://localhost:8000/subscribe",
@@ -65,7 +65,7 @@ var subscribeToPush = function(user,type){
       {
         "user":user,
         "type":type,
-        "token":"CAFEBABE"
+        "token":token
       }
   })
 }
@@ -98,10 +98,11 @@ exports.changeArea = function(req, res) {
   var lon      = location.lon
   var user     = req.body.user
   var client_type = req.body.client_type
+  var token = req.body.token
   if (!lat || !lon || !user) return requestError(res, "missing location.lat, location.lon or user")
 
   // TODO: Subscribe to push notifications somehow
-  subscribeToPush(user,client_type)
+  subscribeToPush(user,client_type,token)
 
   db.collection('mines')
     .find({owner: mongojs.ObjectId(user)})
