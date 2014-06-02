@@ -183,7 +183,7 @@ exports.changeArea = function(req, res) {
 
           db.collection('players')
             .find()
-            .sort({score: 1})
+            .sort({score: -1})
             .map(
               function(player) {
                 if (player._id.toString() == user) {
