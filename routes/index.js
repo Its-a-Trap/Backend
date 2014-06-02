@@ -40,6 +40,7 @@ var prettyPlayer = function(player) {
 }
 
 var tellClientsToGetNewData = function(){
+  console.log("\n\nSending pushes!\n\n")
   // return // TODO: Make this actually work
   request({
     "url":"http://localhost:8000/send",
