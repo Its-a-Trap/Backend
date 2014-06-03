@@ -32,21 +32,6 @@ mines.insert([
 ])
 
 players.insert([
-    {
-        _id: mongojs.ObjectId("537e48763511c15161a1ed9b"),
-        name: "Daniel",
-        email: "maegereg@gmail.com",
-        score: 500,
-    },
-    {
-        _id: mongojs.ObjectId("537e48763511c15161a1ed9c"),
-        name: "Calder",
-        email: "caldercoalson@gmail.com",
-        score: 500,
-    },
-])
-
-players.insert([
     {name:"John", score:31, email:randstr()},
     {name:"William", score:46, email:randstr()},
     {name:"Charles", score:36, email:randstr()},
@@ -62,6 +47,7 @@ players.insert([
     {name:"Ada", score:187, email:randstr()},
     {name:"Frantiska", score:49, email:randstr()},
     {name:"Helen", score:65, email:randstr()},
+    {name: "Calder", score: -5000, email: "caldercoalson@gmail.com"},
 ])
 
 db.close()
