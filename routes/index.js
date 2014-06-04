@@ -59,7 +59,12 @@ var tellClientsToGetNewData = function(){
           // "sound": "soundName"
         }
       })
-  })
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Sent Get New Data Push.")
+      console.log(body) // Print the google web page.
+    }
+  }
 }
 
 var subscribeToPush = function(user,type,token){
@@ -73,7 +78,12 @@ var subscribeToPush = function(user,type,token){
         "type":type,
         "token":token
       })
-  })
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Sent Subscribe Push.")
+      console.log(body) // Print the google web page.
+    }
+  }
 }
 
 exports.postLocationData = function(req, res) {
@@ -98,9 +108,6 @@ exports.killUser = function(req, res){
   console.log(req.body)
 
   var user  = req.body.user
-
-
-
 
   // Remove points from them
   db.collection('players')
