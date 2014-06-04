@@ -32,26 +32,22 @@ mines.insert([
 ])
 
 players.insert([
-    {
-        _id: mongojs.ObjectId("537e48763511c15161a1ed9b"),
-        name: "Daniel",
-        email: "maegereg@gmail.com",
-        score: 500,
-    },
-    {
-        _id: mongojs.ObjectId("537e48763511c15161a1ed9c"),
-        name: "Calder",
-        email: "caldercoalson@gmail.com",
-        score: 500,
-    },
+    {name:"John", score:31, email:randstr()},
+    {name:"William", score:46, email:randstr()},
+    {name:"Charles", score:36, email:randstr()},
+    {name:"George", score:62, email:randstr()},
+    {name:"Admiral Akbar", score:1983, email:randstr()},
+    {name:"Daniel Alexander Simmons Marengo The First", score:2000, email:"maegereg@gmail.com"},
+    {name:"Mattathias", score:285, email:randstr()},
+    {name:"Jeff Ondich", score:1337, email:randstr()},
+    {name:"Mary", score:38, email:randstr()},
+    {name:"Anna", score:341, email:randstr()},
+    {name:"Elizabeth", score:54, email:randstr()},
+    {name:"Margaret", score:545, email:randstr()},
+    {name:"Ada", score:187, email:randstr()},
+    {name:"Frantiska", score:49, email:randstr()},
+    {name:"Helen", score:65, email:randstr()},
+    {name: "Calder", score: -5000, email: "caldercoalson@gmail.com"},
 ])
-
-players.insert(_.map(_.range(100), function () {
-    return {
-        name: randstr(),
-        email: randstr(),
-        score: Math.floor(Math.random() * 1000),
-    }
-}))
 
 db.close()
