@@ -64,7 +64,7 @@ var tellClientsToGetNewData = function(){
       console.log("Sent Get New Data Push.")
       console.log(body) // Print the google web page.
     }
-  }
+  })
 }
 
 var subscribeToPush = function(user,type,token){
@@ -83,7 +83,7 @@ var subscribeToPush = function(user,type,token){
       console.log("Sent Subscribe Push.")
       console.log(body) // Print the google web page.
     }
-  }
+  })
 }
 
 exports.postLocationData = function(req, res) {
