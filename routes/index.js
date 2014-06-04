@@ -46,19 +46,13 @@ var tellClientsToGetNewData = function(){
   request({
     "url":"http://localhost:8000/send",
     "method":"POST",
-    "body": 
-      JSON.stringify({ "android": {
+    "json": { "android": {
         // "collapseKey": "optional",
-        "data": {
-          "message": "YO! GET NEW DATA!"
+          "data": {
+            "message": "YO! GET NEW DATA!"
+          }
         }
-      },
-        "ios": {
-          "badge": 0,
-          "alert": "Your message here",
-          // "sound": "soundName"
-        }
-      })
+    }
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       console.log("Sent Get New Data Push.")
@@ -72,12 +66,12 @@ var subscribeToPush = function(user,type,token){
   request({
     "url":"http://localhost:8000/subscribe",
     "method":"POST",
-    "body":
-      JSON.stringify({
+    "json":
+      {
         "user":user,
         "type":type,
         "token":token
-      })
+      }
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       console.log("Sent Subscribe Push.")
