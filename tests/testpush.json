@@ -1,0 +1,10 @@
+{ "android": {
+    "data": {
+      "message": "YO! GET NEW DATA!"
+    }
+  },
+    "ios": {
+      "badge": 0,
+      "alert": "Your message here",
+    }
+}
