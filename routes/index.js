@@ -50,8 +50,7 @@ var tellSomeoneTheyGotAKill = function(victim,killer){
         "android": {
         "collapseKey": "kills",
         "data": {
-          "message": "killed",
-          "killed": victim
+          "message": "killed " + victim
         }
       },
         "ios": {
