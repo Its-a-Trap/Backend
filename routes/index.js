@@ -40,7 +40,7 @@ var prettyPlayer = function(player) {
   }
 }
 
-var tellSomeoneTheyWereKilled = function(victim,killer){
+var tellSomeoneTheyGotAKill = function(victim,killer){
   console.log("\n\nSending pushes!\n\n")
   // return // TODO: Make this actually work
   request({
@@ -77,7 +77,7 @@ var tellClientsToGetNewData = function(){
     "json": { "android": {
         // "collapseKey": "optional",
           "data": {
-            "message": "YO! GET NEW DATA!"
+            "message": "newdata"
           }
         }
     }
@@ -151,7 +151,7 @@ exports.killUser = function(req, res){
               function(err, owner) {
                 if (err) return serverError(res, err)
                 if (owner) console.log("Subtracted points")
-                tellSomeoneTheyWereKilled(user,owner.name)
+                tellSomeoneTheyGotAKill(user,owner.name)
               }
           )
         }
