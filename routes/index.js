@@ -62,7 +62,7 @@ var tellSomeoneTheyGotAKill = function(victim,killer){
       }
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      console.log("Sent Get New Data Push.")
+      console.log("Sent tell someone they got a kill Push.")
       console.log(body) // Print the google web page.
     }
   })
