@@ -77,7 +77,7 @@ var tellClientsToGetNewData = function(){
     "json": { "android": {
         // "collapseKey": "optional",
           "data": {
-            "message": "newdata"
+            "message": "refreshdata"
           }
         }
     }
