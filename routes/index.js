@@ -46,19 +46,14 @@ var tellSomeoneTheyGotAKill = function(victim,killer){
   request({
     "url":"http://localhost:8000/send",
     "method":"POST",
-    "json":{ "users": [killer],
+    "json": { "users": [killer],
         "android": {
         "collapseKey": "kills",
         "data": {
           "message": "killed " + victim
         }
-      },
-        "ios": {
-          "badge": 0,
-          "alert": "Your message here",
-          // "sound": "soundName"
-        }
       }
+    }
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       console.log("Sent tell someone they got a kill Push.")
