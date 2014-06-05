@@ -48,7 +48,7 @@ var tellSomeoneTheyGotAKill = function(victim,killer){
     "method":"POST",
     "json":{ "users": [killer],
         "android": {
-        // "collapseKey": "optional",
+        "collapseKey": "kills",
         "data": {
           "message": "killed",
           "killed": victim
@@ -75,7 +75,7 @@ var tellClientsToGetNewData = function(){
     "url":"http://localhost:8000/send",
     "method":"POST",
     "json": { "android": {
-        // "collapseKey": "optional",
+          "collapseKey": "data",
           "data": {
             "message": "refreshdata"
           }
