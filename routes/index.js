@@ -40,6 +40,34 @@ var prettyPlayer = function(player) {
   }
 }
 
+var tellSomeoneTheyWereKilled = function(victim,killer){
+  console.log("\n\nSending pushes!\n\n")
+  // return // TODO: Make this actually work
+  request({
+    "url":"http://localhost:8000/send",
+    "method":"POST",
+    "json":{ "users": [killer],
+        "android": {
+        // "collapseKey": "optional",
+        "data": {
+          "message": "killed",
+          "killed": victim
+        }
+      },
+        "ios": {
+          "badge": 0,
+          "alert": "Your message here",
+          // "sound": "soundName"
+        }
+      }
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Sent Get New Data Push.")
+      console.log(body) // Print the google web page.
+    }
+  })
+}
+
 var tellClientsToGetNewData = function(){
   console.log("\n\nSending pushes!\n\n")
   // return // TODO: Make this actually work
@@ -123,6 +151,7 @@ exports.killUser = function(req, res){
               function(err, owner) {
                 if (err) return serverError(res, err)
                 if (owner) console.log("Subtracted points")
+                tellSomeoneTheyWereKilled(user,owner.name)
               }
           )
         }
